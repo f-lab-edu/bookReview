@@ -17,7 +17,7 @@ public class ReviewController {
 
     private final List<ReviewDto> reviews = new ArrayList<>();
 
-    @GetMapping("/review/{bookId}")
+    @GetMapping("/{bookId}")
     @Operation(summary = "도서 리뷰 조회", description = "특정 도서의 리뷰 목록을 조회합니다.")
     public ResponseEntity<ReviewDto> getReview(@PathVariable Long bookId) {
         return ResponseEntity.ok(new ReviewDto(1L, bookId, 1L, "book content", "book summary", 4.5));
