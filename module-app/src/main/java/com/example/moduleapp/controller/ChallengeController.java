@@ -48,13 +48,7 @@ public class ChallengeController {
         }
         return ResponseEntity.ok(challenge);
     }
-
-    @GetMapping("/user/{userId}")
-    @Operation(summary = "사용자의 독서 챌린지 목록 조회", description = "사용자가 참여한 모든 챌린지를 조회합니다.")
-    public ResponseEntity<List<ChallengeDto>> getUserChallenges(@PathVariable Long userId) {
-        return ResponseEntity.ok(userChallenges.getOrDefault(userId, new ArrayList<>()));
-    }
-
+//public ResponseEntity<List<ChallengeDto>> getUserChallenges(@PathVariable Long userId) {
     @PutMapping("/{challengeId}/complete")
     @Operation(summary = "독서 챌린지 완료", description = "사용자가 챌린지를 완료했음을 표시합니다.")
     public ResponseEntity<String> completeChallenge(@PathVariable Long challengeId, @RequestBody ChallengeCompletionRequest request) {

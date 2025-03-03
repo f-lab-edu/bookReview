@@ -35,20 +35,22 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
-    @GetMapping("/search/{bookId}")
+    @GetMapping("/{bookId}/search")
     @Operation(summary = "도서 정보 조회", description = "책 ID를 이용하여 도서 상세 정보를 조회합니다.")
     public ResponseEntity<BookDto> getBookById(@PathVariable Long bookId) {
         BookDto book = new BookDto(bookId, "The Great Gatsby", "F. Scott Fitzgerald", "Classic", 4.5);
         return ResponseEntity.ok(book);
     }
 
-    @GetMapping("/searchStoreReviews/{bookId}")
+    @GetMapping("/{bookId}/searchStoreReviews")
     @Operation(summary = "서점 리뷰 크롤링", description = "서점 리뷰 크롤링을 통해 리뷰 정보를 제공합니다.")
+    // 리스트 스트링
     public ResponseEntity<String> getBookReviews(@PathVariable Long bookId) {
         // 추천이 높은 가장 최신 리뷰 5개씩만 가져온다.
         return ResponseEntity.ok("서점 리뷰 내용 (크롤링 데이터 기반)");
     }
 
+    // bookdto 나
     @GetMapping("/popular")
     @Operation(summary = "인기 도서 조회", description = "현재 가장 인기 있는 도서 리스트를 조회합니다.")
     public ResponseEntity<List<BookDto>> getPopularBooks() {
@@ -59,13 +61,17 @@ public class BookController {
         return ResponseEntity.ok(popularBooks);
     }
 
-    @PostMapping("/addWantToRead/{bookId}")
+    // bookdto나 true/false. request를 리턴하는건 아니고 잘 처리된 dtoㄹ르 반환.
+    // string으로 나가면 json 나갈때 파싱될 때 에러날 수 있으니까
+    @PostMapping("/{bookId}/addWantToRead")
     @Operation(summary = "읽고 싶은 책 추가", description = "사용자가 읽고 싶은 책을 목록에 추가합니다.")
     public ResponseEntity<String> addWantToRead(@RequestBody WantToReadRequest request) {
         return ResponseEntity.ok("책이 읽고 싶은 목록에 추가되었습니다.");
     }
 
-    @PutMapping("/markBookAsRead/{bookId}")
+    // 리턴 안해도 될듯
+    // bookdto
+    @PutMapping("/{bookId}/markBookAsRead")
     @Operation(summary = "책 읽음 상태 업데이트", description = "사용자가 특정 책을 다 읽었다는 상태를 설정합니다.")
     public ResponseEntity<String> markBookAsRead(@PathVariable Long bookId, @RequestBody ReadStatusUpdateRequest request) {
         return ResponseEntity.ok("책이 '읽음' 상태로 업데이트되었습니다.");
