@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
     implementation project(':module-core')
+    implementation project(':module-service')
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.projectlombok:lombok:1.18.26'
