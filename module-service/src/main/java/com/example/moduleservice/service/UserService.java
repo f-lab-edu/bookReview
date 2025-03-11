@@ -1,6 +1,7 @@
 package com.example.moduleservice.service;
 
 import com.example.modulecore.dto.*;
+import com.example.modulecore.domain.User;
 import com.example.moduleservice.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,14 @@ public class UserService {
     }
 
     public UserDto registerUser(SignupRequest request) {
-        return userRepository.saveUser(request);
+        User savedUser = userRepository.saveUser(request);
+        return UserDto.fromEntity(savedUser);
+    }
+
+    public UserDto getUserById(Long userId) {
+        User user = userRepository.getUserById(userId)
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
+        return UserDto.fromEntity(user);
     }
 
     public String login(LoginRequest request) {

@@ -3,27 +3,30 @@ package com.example.moduleservice.repository;
 
 import com.example.modulecore.dto.ChallengeDto;
 import com.example.modulecore.dto.SignupRequest;
-import com.example.modulecore.dto.UserDto;
+import com.example.modulecore.domain.User;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
-public class UserRepository {
-    private final Map<Long, UserDto> users = new HashMap<>();
-    private final Map<Long, List<ChallengeDto>> userChallenges = new HashMap<>();
-    private long userIdSequence = 1L;
-
-    public UserDto saveUser(SignupRequest request) {
-        UserDto newUser = new UserDto(userIdSequence, request.getName(), request.getEmail(), request.getPassword());
-        users.put(userIdSequence, newUser);
-        userChallenges.put(userIdSequence, new ArrayList<>());
-        userIdSequence++;
-        return newUser;
+public interface UserRepository extends JpaRepository<User, Long> {
+    default User saveUser(SignupRequest request) {
+        User newUser = User.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .build();
+        return save(newUser);
     }
 
-    public List<ChallengeDto> getUserChallenges(Long userId) {
-        return userChallenges.getOrDefault(userId, new ArrayList<>());
+    default Optional<User> getUserById(Long userId) {
+        return findById(userId);
     }
 
+    default List<ChallengeDto> getUserChallenges(Long userId) {
+        // userId 별로 DB에서 챌린지 목록을 가져옴
+        return List.of(); // 챌린지 리스트를 반환해야 함
+    }
 }
