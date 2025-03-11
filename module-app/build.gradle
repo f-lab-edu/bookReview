@@ -16,9 +16,11 @@ repositories {
 
 dependencies {
     implementation project(':module-core')
+    implementation project(':module-service')
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.projectlombok:lombok:1.18.26'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     annotationProcessor 'org.projectlombok:lombok:1.18.26'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
