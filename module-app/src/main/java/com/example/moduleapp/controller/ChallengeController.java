@@ -6,13 +6,16 @@ import com.example.modulecore.dto.ChallengeProgressUpdateRequest;
 import com.example.moduleservice.service.ChallengeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/challenges")
+@Validated
 @Tag(name = "독서 챌린지 API", description = "사용자의 독서 챌린지를 관리하는 API")
 public class ChallengeController {
     private final ChallengeService challengeService;
@@ -23,7 +26,7 @@ public class ChallengeController {
 
     @PostMapping
     @Operation(summary = "독서 챌린지 생성", description = "사용자가 새로운 독서 챌린지를 시작합니다.")
-    public ResponseEntity<ChallengeDto> createChallenge(@RequestBody ChallengeDto challengeDto) {
+    public ResponseEntity<ChallengeDto> createChallenge(@Valid @RequestBody ChallengeDto challengeDto) {
         return ResponseEntity.ok(challengeService.createChallenge(challengeDto));
     }
 

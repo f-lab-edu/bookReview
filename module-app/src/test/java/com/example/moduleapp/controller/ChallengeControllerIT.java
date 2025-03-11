@@ -44,6 +44,45 @@ class ChallengeControllerIT {
     }
 
     @Test
+    void createChallenge_ShouldReturnBadRequest_WhenIdIsProvided() {
+        // Given (id가 포함된 잘못된 요청)
+        ChallengeDto challengeDto = new ChallengeDto(999L, 1001L, "잘못된 챌린지", 5, 0, false);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<ChallengeDto> request = new HttpEntity<>(challengeDto, headers);
+
+        // When
+        ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), request, String.class);
+
+        // Then
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
+    void createChallenge_ShouldReturnBadRequest_WhenIdIsBoolean() {
+        // Given
+        String invalidJson = """
+        {
+            "id": true,
+            "userId": 1001,
+            "challengeName": "id 값 true 설정 챌린지",
+            "goal": 5,
+            "booksRead": 0,
+            "completed": false
+        }
+        """;
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<String> request = new HttpEntity<>(invalidJson, headers);
+
+        // When
+        ResponseEntity<String> response = restTemplate.postForEntity(getBaseUrl(), request, String.class);
+
+        // Then (400 Bad Request가 반환되어야 함)
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    }
+
+    @Test
     void getChallenge_ShouldReturnChallenge_WhenExists() {
         // Given (먼저 챌린지를 생성)
         ChallengeDto challengeDto = new ChallengeDto(null, 1001L, "테스트 챌린지", 5, 0, false);
