@@ -14,8 +14,8 @@ services:
 
   app:
     build:
-      context: ./module-app
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: module-app/Dockerfile
     container_name: bookreview-app
     depends_on:
       - db
