@@ -12,5 +12,5 @@ import java.util.List;
 @AllArgsConstructor
 public class UserPreferencesDto {
     private Long userId;
-    private List<String> preferredGenres;
+    private List<String> genres;
 }
