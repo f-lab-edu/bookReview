@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,7 +17,6 @@ public class UserDto {
     private String password;
 
     public static UserDto fromEntity(User user) {
-        UserDto userDto = new UserDto(user.getId(), user.getName(), user.getEmail(), user.getPassword());
-        return userDto;
+        return new UserDto(user.getId(), user.getName(), user.getEmail(), user.getPassword());
     }
 }

@@ -1,16 +1,25 @@
 package com.example.moduleapp.controller;
 
+import com.example.modulecore.domain.User;
+import com.example.modulecore.dto.ChallengeDto;
+import com.example.modulecore.dto.LoginRequest;
+import com.example.modulecore.dto.SignupRequest;
+import com.example.modulecore.dto.UserPreferencesDto;
 import com.example.moduleservice.service.UserService;
-import com.example.modulecore.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/users")
+@SecurityRequirement(name = "JWT")
 @Tag(name = "유저 인증 API", description = "회원가입 및 로그인 API")
 public class UserController {
     private final UserService userService;
@@ -20,15 +29,36 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    @Operation(summary = "회원가입", description = "새로운 사용자를 등록합니다.")
-    public ResponseEntity<UserDto> register(@RequestBody SignupRequest request) {
-        return ResponseEntity.ok(userService.registerUser(request));
+    @Operation(summary = "회원가입", description = "회원가입을 수행하고 JWT 토큰을 반환합니다.")
+    public ResponseEntity<Map<String, String>> register(@RequestBody SignupRequest request) {
+        User user = User.builder()
+                .name(request.getName())
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .build();
+
+        userService.registerUser(user);
+
+        // 로그인 시 평문 비밀번호로 다시 요청 생성
+        User loginUser = User.builder()
+                .email(request.getEmail())
+                .password(request.getPassword()) // 평문
+                .build();
+
+        String token = userService.login(loginUser);
+        return ResponseEntity.ok(Collections.singletonMap("token", token));
     }
 
     @PostMapping("/login")
-    @Operation(summary = "로그인", description = "사용자 로그인을 수행합니다.")
-    public ResponseEntity<String> login(@RequestBody LoginRequest request) {
-        return ResponseEntity.ok(userService.login(request));
+    @Operation(summary = "로그인", description = "사용자 로그인을 수행하고 JWT 토큰을 반환합니다.")
+    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
+        User user = User.builder()
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .build();
+
+        String token = userService.login(user);
+        return ResponseEntity.ok(Collections.singletonMap("token", token));
     }
 
     @PostMapping("/preferences")
@@ -42,4 +72,6 @@ public class UserController {
     public ResponseEntity<List<ChallengeDto>> getUserChallenges(@PathVariable Long userId) {
          return ResponseEntity.ok(userService.getUserChallenges(userId));
     }
+
+
 }
