@@ -60,8 +60,13 @@ public class UserService {
             throw new RuntimeException("Refresh Token이 만료되었습니다.");
         }
 
-        return jwtTokenProvider.createToken(token.getId());
+        return jwtTokenProvider.createToken(token.getUserId());
     }
+
+    public void logout(Long userId) {
+        refreshTokenRepository.deleteByUserId(userId);
+    }
+
 
     public String setUserPreferences(UserPreferencesDto preference) {
         User user = userRepository.findById(preference.getUserId())

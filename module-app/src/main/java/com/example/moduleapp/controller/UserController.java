@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
@@ -64,6 +65,14 @@ public class UserController {
     public ResponseEntity<Map<String, String>> refresh(@RequestBody Map<String, String> body) {
         String newAccessToken = userService.reissueAccessToken(body.get("refreshToken"));
         return ResponseEntity.ok(Collections.singletonMap("accessToken", newAccessToken));
+    }
+
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "현재 로그인한 사용자의 리프레시 토큰을 삭제합니다.")
+    public ResponseEntity<String> logout(Authentication authentication) {
+        Long userId = (Long) authentication.getPrincipal();
+        userService.logout(userId);
+        return ResponseEntity.ok("로그아웃 되었습니다.");
     }
 
     @PostMapping("/preferences")
