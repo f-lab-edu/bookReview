@@ -16,6 +16,7 @@ public class JwtTokenProvider {
     private String secretKeyPlain;
 
     private final long TOKEN_VALIDITY = 3600000L; // 1시간
+    private final long REFRESH_TOKEN_VALIDITY = 1209600000L; // 14일
 
     // byte[] → SecretKey로 변환
     private SecretKey getSecretKey() {
@@ -26,6 +27,18 @@ public class JwtTokenProvider {
     public String createToken(Long userId) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + TOKEN_VALIDITY);
+
+        return Jwts.builder()
+                .setSubject(String.valueOf(userId))
+                .setIssuedAt(now)
+                .setExpiration(expiry)
+                .signWith(getSecretKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String createRefreshToken(Long userId) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + REFRESH_TOKEN_VALIDITY);
 
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))

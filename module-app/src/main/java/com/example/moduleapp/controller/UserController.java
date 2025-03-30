@@ -9,6 +9,7 @@ import com.example.moduleservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,13 +21,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/users")
 @SecurityRequirement(name = "JWT")
+@RequiredArgsConstructor
 @Tag(name = "유저 인증 API", description = "회원가입 및 로그인 API")
 public class UserController {
     private final UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @PostMapping("/signup")
     @Operation(summary = "회원가입", description = "회원가입을 수행하고 JWT 토큰을 반환합니다.")
@@ -59,6 +57,13 @@ public class UserController {
 
         String token = userService.login(user);
         return ResponseEntity.ok(Collections.singletonMap("token", token));
+    }
+
+    @PostMapping("/refresh")
+    @Operation(summary = "토큰 재발급", description = "Refresh Token으로 새로운 Access Token 발급")
+    public ResponseEntity<Map<String, String>> refresh(@RequestBody Map<String, String> body) {
+        String newAccessToken = userService.reissueAccessToken(body.get("refreshToken"));
+        return ResponseEntity.ok(Collections.singletonMap("accessToken", newAccessToken));
     }
 
     @PostMapping("/preferences")

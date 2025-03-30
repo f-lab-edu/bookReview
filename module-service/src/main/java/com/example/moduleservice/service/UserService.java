@@ -1,16 +1,19 @@
 package com.example.moduleservice.service;
 
+import com.example.modulecore.domain.RefreshToken;
 import com.example.modulecore.domain.User;
 import com.example.modulecore.domain.UserPreference;
 import com.example.modulecore.dto.ChallengeDto;
 import com.example.modulecore.dto.UserPreferencesDto;
 import com.example.moduleservice.config.JwtTokenProvider;
+import com.example.moduleservice.repository.RefreshTokenRepository;
 import com.example.moduleservice.repository.UserPreferenceRepository;
 import com.example.moduleservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,17 +22,17 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserRepository userRepository;
     private final UserPreferenceRepository preferenceRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public String registerUser(User user) {
+    public void registerUser(User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new RuntimeException("이미 사용 중인 이메일입니다.");
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.saveUser(user);
-        return "회원가입이 완료되었습니다.";
     }
 
     public String login(User loginUser) {
@@ -40,7 +43,24 @@ public class UserService {
             throw new RuntimeException("비밀번호가 일치하지 않습니다.");
         }
 
-        return jwtTokenProvider.createToken(user.getId());
+        String accessToken = jwtTokenProvider.createToken(user.getId());
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
+        LocalDateTime expiryDate = LocalDateTime.now().plusDays(14);
+
+        refreshTokenRepository.save(new RefreshToken(user.getId(), refreshToken, expiryDate));
+
+        return accessToken;
+    }
+
+    public String reissueAccessToken(String refreshToken) {
+        RefreshToken token = refreshTokenRepository.findByToken(refreshToken)
+                .orElseThrow(() -> new RuntimeException("유효하지 않은 리프레시 토큰입니다."));
+
+        if (token.getExpiryDate().isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("Refresh Token이 만료되었습니다.");
+        }
+
+        return jwtTokenProvider.createToken(token.getId());
     }
 
     public String setUserPreferences(UserPreferencesDto preference) {
