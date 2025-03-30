@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 public class RefreshToken {
     @Id
-    private Long id;
+    private Long userId;
 
     private String token;
 

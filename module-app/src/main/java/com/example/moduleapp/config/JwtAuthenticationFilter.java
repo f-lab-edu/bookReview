@@ -26,13 +26,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getRequestURI();
-        if (path.startsWith("/api/users/signup") || path.startsWith("/api/users/login")) {
+        if (path.startsWith("/api/users/signup") ||
+                path.startsWith("/api/users/login") ||
+                path.startsWith("/api/users/refresh") ||
+                path.startsWith("/swagger") ||
+                path.startsWith("/v3/api-docs")) {
             filterChain.doFilter(request, response);
             return;
         }
 
         String token = extractTokenFromRequest(request);
-        String uri = request.getRequestURI();
 
         if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
             Long userId = jwtTokenProvider.getUserId(token);
